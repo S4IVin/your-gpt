@@ -5,7 +5,7 @@ import { ref } from 'vue'
 import { Configuration, OpenAIApi } from 'openai'
 
 const configuration = new Configuration({
-  apiKey: import.meta.env.VITE_OPENAI_KEY
+  apiKey: "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"
 })
 const openai = new OpenAIApi(configuration)
 
