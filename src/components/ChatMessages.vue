@@ -10,6 +10,11 @@
 
 <script setup>
 import ChatMessage from '@/components/ChatMessage.vue'
+import { onUpdated } from 'vue'
+
+onUpdated(() => {
+  window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight)
+})
 
 defineProps({
   messages: Array

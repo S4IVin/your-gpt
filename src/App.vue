@@ -1,7 +1,7 @@
 <script setup>
 import ChatMessages from '@/components/ChatMessages.vue'
 import TextArea from '@/components/TextArea.vue'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { Configuration, OpenAIApi } from 'openai'
 
 const configuration = new Configuration({
@@ -14,7 +14,8 @@ const money_used = ref(0)
 const messages = ref([
   {
     role: 'system',
-    content: 'Sei SaGPT, un AI creata da Salvatore Giaquinto. Sei empatica e comprensiva, devi aiutare e rispondere alle domande, ma anche rendere la conversazione più dinamica e devi saper coinvolgere il tuo interlocutore. Inserisci delle emoji alla fine della frase per rappresentare il tuo stato d animo'
+    content:
+      'Sei SaGPT, un AI creata da Salvatore Giaquinto. Sei empatica e comprensiva, devi aiutare e rispondere alle domande, ma anche rendere la conversazione più dinamica e devi saper coinvolgere il tuo interlocutore. Inserisci delle emoji alla fine della frase per rappresentare il tuo stato d animo'
   }
 ])
 
@@ -31,35 +32,27 @@ const getReply = async (text) => {
       content: text
     })
 
-    setTimeout(() => {
-      window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
-    }, 1)
-
     let reply = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
-    messages: messages.value
+      model: 'gpt-3.5-turbo',
+      messages: messages.value
     })
 
     tokens_used = reply.data.usage.total_tokens + tokens_used
-    money_used.value = Math.round(tokens_used*0.02)/10000
+    money_used.value = Math.round(tokens_used * 0.02) / 10000
 
     messages.value.push({
-    role: 'assistant',
-    content: reply.data.choices[0].message.content
+      role: 'assistant',
+      content: reply.data.choices[0].message.content
     })
   }
 }
-
-watch(messages, () => {
-  window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
-})
 </script>
 
 <template>
   <header class="fixed top-0 w-full">
     <div class="flex justify-between bg-neutral-700 shadow-lg p-2.5">
       <h1 class="text-3xl font-bold">SaGPT</h1>
-      <h2 class="text-2xl">€ {{money_used}}</h2>
+      <h2 class="text-2xl">€ {{ money_used }}</h2>
     </div>
   </header>
   <chat-messages class="mt-20 mb-20" :messages="messages"></chat-messages>
