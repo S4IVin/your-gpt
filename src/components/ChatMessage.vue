@@ -1,19 +1,19 @@
 <template>
   <div
-    :class="{
+      :class="{
       'flex w-full': true,
       'justify-end': role !== 'SaGPT'
     }"
   >
     <div
-      :class="{
+        :class="{
         'mx-6 flex inline-flex items-center rounded-lg sm:mx-12 md:mx-16 lg:mx-20': true,
         'bg-gray-500 flex-row-reverse': role !== 'SaGPT',
         'bg-neutral-500': role === 'SaGPT'
       }"
     >
       <h1
-        :class="{
+          :class="{
           'h-full font-bold p-2.5': true,
           'bg-gray-600 rounded-r-lg border-l-2': role !== 'SaGPT',
           'bg-neutral-600 rounded-l-lg border-r-2': role === 'SaGPT'
@@ -21,7 +21,7 @@
       >
         {{ role }}
       </h1>
-      <p class="p-2.5 break-word">{{ text }}</p>
+      <p class="p-2.5 break-word" v-html="text"></p>
     </div>
   </div>
 </template>
