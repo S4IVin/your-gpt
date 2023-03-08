@@ -11,17 +11,14 @@ const openai = new OpenAIApi(configuration)
 const gpt_turbo = ref(true)
 const tokens_used = ref(0)
 const money_used = ref(0)
+const max_messages = ref(5)
 const messages = ref([
   {
     role: 'system',
     content: 'Sei SaGPT, un AI di Salvatore Giaquinto. Sei abbastanza concisa. Usi emoji per esprimersi'
   }
 ])
-const clearChat = () => {
-  messages.value.length = 1
-  tokens_used.value = 0
-  money_used.value = 0
-}
+
 const createConversation = async (text) => {
   if (text) {
     addMessage('user', text)
@@ -50,7 +47,7 @@ const generateReply = () => {
 
   return getChatCompletion({
     model: gpt_turbo.value ? 'gpt-3.5-turbo' : 'text-davinci-003',
-    messages: gpt_turbo.value ? messages.value : undefined,
+    messages: gpt_turbo.value ? getMessages() : undefined,
     prompt: !gpt_turbo.value ? `${request}\nSaGPT: ` : undefined,
     max_tokens: !gpt_turbo.value ? 300 : undefined,
     temperature: !gpt_turbo.value ? 0.9 : undefined,
@@ -68,6 +65,20 @@ const addMessage = (role, text) => {
     role: role,
     content: text
   })
+}
+
+const clearChat = () => {
+  messages.value.length = 1
+  tokens_used.value = 0
+  money_used.value = 0
+}
+
+const getMessages = () => {
+  if (messages.value.length <= 5) {
+    return messages.value;
+  } else {
+    return messages.value.slice(0,1).concat(messages.value.slice(messages.value.length - max_messages.value));
+  }
 }
 </script>
 
@@ -96,6 +107,7 @@ const addMessage = (role, text) => {
         >
           GPT-Davinci
         </button>
+        <input v-model="max_messages" class="rounded-lg bg-neutral-500 p-2 text-center ml-2.5 focus:outline-none" type="number" placeholder="Msg" min="1" max="8" size="1">
       </div>
       <h2 class="flex items-center text-2xl">{{ tokens_used }}</h2>
     </div>
