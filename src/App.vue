@@ -77,7 +77,7 @@ const getMessages = () => {
   if (messages.value.length <= 5) {
     return messages.value;
   } else {
-    return messages.value.slice(0,1).concat(messages.value.slice(messages.value.length - max_messages.value));
+    return messages.value.slice(0,2).concat(messages.value.slice(messages.value.length - max_messages.value));
   }
 }
 </script>
