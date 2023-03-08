@@ -29,30 +29,32 @@ const createConversation = async (text) => {
     updateUsageAndCost(reply.data.usage.total_tokens)
     addMessage(
       'assistant',
-      gpt_turbo.value ? reply.data.choices[0].messages.content : reply.data.choices[0].text
+      gpt_turbo.value ? reply.data.choices[0].message.content : reply.data.choices[0].text
     )
   }
 }
 
 const generateReply = () => {
-  let getChatCompletion = gpt_turbo.value ? openai.createChatCompletion : openai.createCompletion
+  let request = 'La seguente è una conversazione con SaGPT. SaGPT è un AI di Salvatore Giaquinto. È abbastanza concisa. Usa emoji per esprimersi.\n'
+  const getChatCompletion = gpt_turbo.value
+    ? (a) => openai.createChatCompletion(a)
+    : (a) => openai.createCompletion(a)
 
-  if (gpt_turbo.value) {
+  if (!gpt_turbo.value) {
     const roles = { user: 'Human', assistant: 'SaGPT' }
-    let prompt = 'La seguente è una conversazione con SaGPT. SaGPT è un AI di Salvatore Giaquinto. È abbastanza concisa. Usa emoji per esprimersi.\n'
 
     for (let message of messages.value.slice(1)) {
-      prompt = `${prompt}\n ${roles[message.role]}: ${message.content}`
+      request = `${request}\n ${roles[message.role]}: ${message.content}`
     }
   }
 
   return getChatCompletion({
     model: gpt_turbo.value ? 'gpt-3.5-turbo' : 'text-davinci-003',
-    messages: messages.value,
-    prompt: `${prompt}\nSaGPT: `,
-    max_tokens: 300,
-    temperature: 0.9,
-    presence_penalty: 0.7
+    messages: gpt_turbo.value ? messages.value : undefined,
+    prompt: !gpt_turbo.value ? `${request}\nSaGPT: ` : undefined,
+    max_tokens: !gpt_turbo.value ? 300 : undefined,
+    temperature: !gpt_turbo.value ? 0.9 : undefined,
+    presence_penalty: !gpt_turbo.value ? 0.7 : undefined
   })
 }
 
@@ -95,7 +97,7 @@ const addMessage = (role, text) => {
           GPT-Davinci
         </button>
       </div>
-      <h2 class="text-2xl">{{ tokens_used }}</h2>
+      <h2 class="flex items-center text-2xl">{{ tokens_used }}</h2>
     </div>
   </header>
   <chat-messages class="mt-20 mb-20" :messages="messages"></chat-messages>
