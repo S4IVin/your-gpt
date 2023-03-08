@@ -95,7 +95,7 @@ const getMessages = () => {
             'bg-gray-500': gpt_turbo
           }"
         >
-          GPT-Turbo
+          Turbo
         </button>
         <button
           @click="gpt_turbo = false"
@@ -105,9 +105,9 @@ const getMessages = () => {
             'bg-gray-500': !gpt_turbo
           }"
         >
-          GPT-Davinci
+          Davinci
         </button>
-        <input v-model="max_messages" class="rounded-lg bg-neutral-500 p-2 text-center ml-2.5 focus:outline-none" type="number" placeholder="Msg" min="1" max="8" size="1">
+        <input v-model="max_messages" class="rounded-lg bg-neutral-500 py-2 text-center ml-2.5 focus:outline-none" type="number" placeholder="Msg" min="1" max="8" size="1">
       </div>
       <h2 class="flex items-center text-2xl">{{ tokens_used }}</h2>
     </div>
