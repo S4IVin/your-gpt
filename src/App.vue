@@ -9,7 +9,7 @@ const configuration = new Configuration({
 })
 const openai = new OpenAIApi(configuration)
 
-let tokens_used = 0
+const tokens_used = ref(0)
 const money_used = ref(0)
 const messages = ref([
   {
@@ -21,7 +21,7 @@ const messages = ref([
 
 const clearChat = () => {
   messages.value.length = 1
-  tokens_used = 0
+  tokens_used.value = 0
   money_used.value = 0
 }
 
@@ -37,8 +37,8 @@ const getReply = async (text) => {
       messages: messages.value
     })
 
-    tokens_used = reply.data.usage.total_tokens + tokens_used
-    money_used.value = Math.round(tokens_used * 0.02) / 10000
+    tokens_used.value = reply.data.usage.total_tokens + tokens_used.value
+    money_used.value = Math.round(tokens_used.value * 0.02) / 10000
 
     messages.value.push({
       role: 'assistant',
@@ -52,7 +52,7 @@ const getReply = async (text) => {
   <header class="fixed top-0 w-full">
     <div class="flex justify-between bg-neutral-700 shadow-lg p-2.5">
       <h1 class="text-3xl font-bold">SaGPT</h1>
-      <h2 class="text-2xl">€ {{ money_used }}</h2>
+      <h2 class="text-2xl">{{ tokens_used }}</h2>
     </div>
   </header>
   <chat-messages class="mt-20 mb-20" :messages="messages"></chat-messages>
