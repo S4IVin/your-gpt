@@ -168,7 +168,7 @@ const clearChat = () => {
         <button @click="settings_hidden = false">
           <img
             class="ml-4 rounded-lg bg-neutral-500 invert p-1.5"
-            src="src/assets/menu.png"
+            src="/src/assets/menu.png"
             width="40"
             height="40"
           />

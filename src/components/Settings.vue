@@ -5,7 +5,7 @@
     <div class="flex items-start justify-between">
       <h1 class="align-text-top text-2xl font-bold -translate-y-2.5">Settings</h1>
       <button @click="$emit('closeSettings')">
-        <img src="src/assets/close.png" class="invert" />
+        <img src="/src/assets/close.png" class="invert" />
       </button>
     </div>
     <div class="flex flex-col">
