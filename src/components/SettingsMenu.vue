@@ -11,8 +11,7 @@
     <div class="flex flex-col">
       <span>API Key</span>
       <input
-        :value="api_key"
-        @input="$emit('apiKeyChange', $event.target.value)"
+        v-model="settings.api_key"
         class="mt-1 rounded-lg border-2 bg-neutral-500 p-1 focus:outline-none"
       />
     </div>
@@ -20,8 +19,7 @@
       <div class="flex flex-col border-b-2 pb-5">
         <span>System Prompt</span>
         <textarea
-          :value="system_prompt"
-          @input="$emit('systemPromptChange', $event.target.value); localStorage.setItem('system_prompt', $event.target.value)"
+          v-model="settings.system_prompt"
           class="mt-1 h-24 w-72 resize-none rounded-lg border-2 bg-neutral-500 p-1 focus:outline-none"
         ></textarea>
       </div>
@@ -33,8 +31,7 @@
       <div class="flex items-center justify-between">
         <span>Messages Limit</span>
         <input
-          :value="messages_limit"
-          @input="$emit('messagesLimitChange', $event.target.value); localStorage.setItem('message_limit', $event.target.value)"
+          v-model="settings.messages_limit"
           class="mt-1 h-6 rounded-lg border-2 bg-neutral-500 text-center focus:outline-none"
           size="3"
           type="number"
@@ -48,29 +45,27 @@
       <div class="flex items-center justify-between border-b-2 pb-3">
         <span>Max Total Tokens</span>
         <input
-          :value="max_total_tokens"
-          @input="$emit('maxTotalTokensChange', $event.target.value); localStorage.setItem('max_total_tokens', $event.target.value)"
+          v-model="settings.max_total_tokens"
           class="mt-1 h-6 rounded-lg border-2 bg-neutral-500 text-center focus:outline-none"
           size="3"
           type="number"
         />
       </div>
     </tooltip>
-    <div :class="{ 'opacity-50': gpt_turbo }">
+    <div :class="{ 'opacity-50': settings.gpt_turbo }">
       <tooltip
-        :offset_y="ref(!gpt_turbo ? 5.5 : 2)"
+        :offset_y="ref(!settings.gpt_turbo ? 5.5 : 2)"
         :text="
-          !gpt_turbo
+          !settings.gpt_turbo
             ? 'Higher values make the text more creative and diverse. Lower values make the text more predictable and accurate.'
             : 'Setting avaible only with Davinci model'
         "
       >
         <div class="flex flex-col">
-          <span>Temperature {{ temperature }}</span>
+          <span>Temperature {{ settings.temperature }}</span>
           <input
-            :disabled="gpt_turbo"
-            :value="temperature"
-            @input="$emit('temperatureChange', $event.target.value); localStorage.setItem('temperature', $event.target.value)"
+            :disabled="settings.gpt_turbo"
+            v-model="settings.temperature"
             type="range"
             min="0"
             max="1"
@@ -79,19 +74,18 @@
         </div>
       </tooltip>
       <tooltip
-        :offset_y="ref(!gpt_turbo ? 5.5 : 2)"
+        :offset_y="ref(!settings.gpt_turbo ? 5.5 : 2)"
         :text="
-          !gpt_turbo
+          !settings.gpt_turbo
             ? 'Higher values reduce repetition but lower coherence. Lower values increase repetition but improve coherence.'
             : 'Setting avaible only with Davinci model'
         "
       >
         <div class="flex flex-col">
-          <span>Presence Penalty {{ presence_penalty }}</span>
+          <span>Presence Penalty {{ settings.presence_penalty }}</span>
           <input
-            :disabled="gpt_turbo"
-            :value="presence_penalty"
-            @input="$emit('presencePenaltyChange', $event.target.value); localStorage.setItem('presence_penalty', $event.target.value)"
+            :disabled="settings.gpt_turbo"
+            v-model="settings.presence_penalty"
             type="range"
             min="-2"
             max="2"
@@ -100,20 +94,19 @@
         </div>
       </tooltip>
       <tooltip
-        :offset_y="ref(!gpt_turbo ? 5.5 : 2)"
+        :offset_y="ref(!settings.gpt_turbo ? 5.5 : 2)"
         :text="
-          !gpt_turbo
+          !settings.gpt_turbo
             ? 'Higher values penalize repeated words but impair readability. Lower values favor repeated words but enhance readability.'
             : 'Setting avaible only with Davinci model'
         "
       >
         <div class="flex flex-col">
-          <span>Frequency Penalty {{ frequency_penalty }}</span>
+          <span>Frequency Penalty {{ settings.frequency_penalty }}</span>
           <input
-            :disabled="gpt_turbo"
-            :readonly="gpt_turbo"
-            :value="frequency_penalty"
-            @input="$emit('frequencyPenaltyChange', $event.target.value); localStorage.setItem('frequency_penalty', $event.target.value)"
+            :disabled="settings.gpt_turbo"
+            :readonly="settings.gpt_turbo"
+            v-model="settings.frequency_penalty"
             type="range"
             min="-2"
             max="2"
@@ -127,16 +120,8 @@
 
 <script setup>
 import { ref } from 'vue'
+import {useSettingsStore} from "@/stores/settingsStore";
 import Tooltip from '@/components/Tooltip.vue'
 
-defineProps({
-  gpt_turbo: Boolean,
-  api_key: String,
-  system_prompt: String,
-  messages_limit: String,
-  max_total_tokens: String,
-  temperature: String,
-  presence_penalty: String,
-  frequency_penalty: String
-})
+const settings = useSettingsStore()
 </script>
