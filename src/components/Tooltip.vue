@@ -28,8 +28,8 @@ const props = defineProps({
 
 const hovering = ref(false)
 const style = {
-  bottom: -props.offset_y + 'rem',
-  left: props.offset_x + 'rem',
-  width: props.width + 'rem'
+  bottom: `${-props.offset_y}rem`,
+  left: `${props.offset_x}rem`,
+  width: `${props.width}rem`
 }
 </script>

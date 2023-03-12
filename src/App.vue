@@ -1,10 +1,10 @@
 <script setup>
 import TheSettingsMenu from '@/components/TheSettingsMenu.vue'
-import TheModelSelector from "@/components/TheModelSelector.vue";
+import TheModelSelector from '@/components/TheModelSelector.vue'
 import TheChatMessages from '@/components/TheChatMessages.vue'
 import TheTextArea from '@/components/TheTextArea.vue'
 import Warning from '@/components/Warning.vue'
-import {useAppStore} from "@/stores/AppStore";
+import { useAppStore } from '@/stores/AppStore'
 
 const app = useAppStore()
 </script>
