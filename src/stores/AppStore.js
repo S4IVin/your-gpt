@@ -53,18 +53,19 @@ export const useAppStore = defineStore('app', () => {
     const getMessages = () => {
         const messagesLimitDisabled = settings.messagesLimit === 0 || settings.messagesLimit === ""
 
-        return messagesLimitDisabled ? messages.value : extractItemsFromArray(messages.value)
+        return messagesLimitDisabled ? messages.value : extractItemsFromArray(messages.value, settings.messagesLimit)
     }
 
-    const generatePrompt = () => {
-        const roles = { user: 'Human', assistant: 'AI' }
-        let prompt = `La seguente è una conversazione tra un umano e un AI. L'AI deve simulare qeusto ruolo: ${settings.systemPrompt}.\n`
+    const generateDavinciPrompt = () => {
+        const roles = { user: settings.userRole, assistant: settings.assistantRole }
+        let prompt = `${settings.davinciPrompt}\n`
 
         getMessages().slice(1).forEach((message) => {
+            console.log(roles[message.role])
             prompt = `${prompt}\n ${roles[message.role]}: ${message.content}`
         })
 
-        return `${prompt}\nAI: `
+        return `${prompt}\n${roles.assistant}: `
     }
 
     const generateConfiguration = () => {
@@ -75,7 +76,9 @@ export const useAppStore = defineStore('app', () => {
 
     const generateReply = () => {
         const getChatCompletion = generateConfiguration()
-        const prompt = generatePrompt()
+        const prompt = generateDavinciPrompt()
+
+        messages.value[0] = {role: 'system', content: settings.systemPrompt}
 
         return getChatCompletion({
             model: settings.gptTurbo ? 'gpt-3.5-turbo' : 'text-davinci-003',

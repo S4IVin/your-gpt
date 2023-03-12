@@ -12,16 +12,52 @@
       <span>API Key</span>
       <input
         v-model="settings.apiKey"
-        @input="addToStore('apiKey', $event.target.value)"
+        @input="addToStore('apiKey', $event.target.value); $emit('apiKeyChanged', $event.target.value)"
         class="mt-1 rounded-lg border-2 bg-neutral-500 p-1 focus:outline-none"
       />
     </div>
-    <tooltip offset_y="2" text="The system prompt helps you set the behavior of the assistant.">
+    <div class="flex justify-between">
+      <tooltip :hidden="settings.gptTurbo" offset_y="3" text="The name of your role.">
+        <div class="flex flex-col">
+          <span>User Role</span>
+          <input
+              v-model="settings.userRole"
+              @input="addToStore('userRole', $event.target.value)"
+              placeholder="User name"
+              class="w-32 mt-1 resize-none rounded-lg border-2 bg-neutral-500 p-1 focus:outline-none"
+          >
+        </div>
+      </tooltip>
+      <tooltip :hidden="settings.gptTurbo" offset_y="3" text="The name of assistant's role.">
+        <div class="flex flex-col">
+          <span>Assistant Role</span>
+          <input
+              v-model="settings.assistantRole"
+              @input="addToStore('assistantRole', $event.target.value)"
+              placeholder="Assistant name"
+              class="w-32 mt-1 resize-none rounded-lg border-2 bg-neutral-500 p-1 focus:outline-none"
+          >
+        </div>
+      </tooltip>
+    </div>
+    <tooltip :hidden="!settings.gptTurbo" offset_y="3" text="The system prompt helps you set the behavior of the assistant. It is written in 2nd person.">
       <div class="flex flex-col border-b-2 pb-5">
-        <span>System Prompt</span>
+        <span>System Prompt (Turbo)</span>
         <textarea
             v-model="settings.systemPrompt"
             @input="addToStore('systemPrompt', $event.target.value)"
+            placeholder="You are [name]... You are..."
+            class="mt-1 h-24 w-72 resize-none rounded-lg border-2 bg-neutral-500 p-1 focus:outline-none"
+        ></textarea>
+      </div>
+    </tooltip>
+    <tooltip :hidden="settings.gptTurbo" offset_y="3" text="The system prompt helps you set the behavior of the assistant. It is written in 3rd person.">
+      <div class="flex flex-col border-b-2 pb-5">
+        <span>System Prompt (Davinci)</span>
+        <textarea
+            v-model="settings.davinciPrompt"
+            @input="addToStore('davinciPrompt', $event.target.value)"
+            placeholder="The following is a conversation with [name]. [name] is..."
             class="mt-1 h-24 w-72 resize-none rounded-lg border-2 bg-neutral-500 p-1 focus:outline-none"
         ></textarea>
       </div>
@@ -35,8 +71,7 @@
         <input
             v-model.number="settings.messagesLimit"
             @input="addToStore('messagesLimit', parseInt($event.target.value))"
-            class="mt-1 h-6 rounded-lg border-2 bg-neutral-500 text-center focus:outline-none"
-            size="3"
+            class="w-16 mt-1 h-6 rounded-lg border-2 bg-neutral-500 text-center focus:outline-none"
             type="number"
         />
       </div>
@@ -50,8 +85,7 @@
         <input
           v-model.number="settings.maxTotalTokens"
           @input="addToStore('maxTotalTokens', parseInt($event.target.value))"
-          class="mt-1 h-6 rounded-lg border-2 bg-neutral-500 text-center focus:outline-none"
-          size="3"
+          class="w-16 mt-1 h-6 rounded-lg border-2 bg-neutral-500 text-center focus:outline-none"
           type="number"
         />
       </div>

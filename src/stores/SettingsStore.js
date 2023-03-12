@@ -10,12 +10,15 @@ export const useSettingsStore = defineStore('settings', () => {
 
     const gptTurbo = ref(useStorage('gptTurbo', true))
     const apiKey = ref(useStorage('apiKey', ""))
-    const systemPrompt = ref(useStorage('systemPrompt', "Sei SaGPT, un AI di Salvatore Giaquinto. Sei abbastanza concisa. Usi emoji per esprimerti"))
+    const userRole = ref(useStorage('userRole', "User"))
+    const assistantRole = ref(useStorage('assistantRole', "YourGPT"))
+    const systemPrompt = ref(useStorage('systemPrompt', "You are YourGPT. You are quite concise, you use emojis to express yourself."))
+    const davinciPrompt = ref(useStorage('davinciPrompt', "The following is a conversation with YourGPT. YourGPT is quite concise, it uses emojis to express itself."))
     const messagesLimit = ref(useStorage('messagesLimit', 5))
     const maxTotalTokens = ref(useStorage('maxTotalTokens', 0))
     const temperature = ref(useStorage('temperature', 0.5))
     const presencePenalty = ref(useStorage('presencePenalty', 0))
     const frequencyPenalty = ref(useStorage('frequencyPenalty', 0))
 
-    return {gptTurbo, apiKey, systemPrompt, messagesLimit, maxTotalTokens, temperature, presencePenalty, frequencyPenalty}
+    return {gptTurbo, apiKey, userRole, assistantRole, systemPrompt, davinciPrompt, messagesLimit, maxTotalTokens, temperature, presencePenalty, frequencyPenalty}
 })
