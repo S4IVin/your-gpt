@@ -22,7 +22,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const frequencyPenalty = ref(useStorage('frequencyPenalty', true, 0))
 
   return {
-    gptTurbo,
+    gpt4: gptTurbo,
     apiKey,
     userRole,
     assistantRole,

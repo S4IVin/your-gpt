@@ -82,7 +82,7 @@ export const useAppStore = defineStore('app', () => {
   const generateConfiguration = () => {
     const configuration = new Configuration({ apiKey: settings.apiKey })
     const openai = new OpenAIApi(configuration)
-    return settings.gptTurbo
+    return settings.gpt4
       ? (a) => openai.createChatCompletion(a)
       : (a) => openai.createCompletion(a)
   }
@@ -94,13 +94,13 @@ export const useAppStore = defineStore('app', () => {
     messages.value[0] = { role: 'system', content: settings.systemPrompt }
 
     return getChatCompletion({
-      model: settings.gptTurbo ? 'gpt-3.5-turbo' : 'text-davinci-003',
-      messages: settings.gptTurbo ? getMessages() : undefined,
-      prompt: !settings.gptTurbo ? prompt : undefined,
-      max_tokens: !settings.gptTurbo ? 4092 - getTokenCount(prompt) : undefined,
-      temperature: !settings.gptTurbo ? settings.temperature : undefined,
-      presence_penalty: !settings.gptTurbo ? settings.presencePenalty : undefined,
-      frequency_penalty: !settings.gptTurbo ? settings.frequencyPenalty : undefined
+      model: settings.gpt4 ? 'gpt-4' : 'text-davinci-003',
+      messages: settings.gpt4 ? getMessages() : undefined,
+      prompt: !settings.gpt4 ? prompt : undefined,
+      max_tokens: !settings.gpt4 ? 4092 - getTokenCount(prompt) : undefined,
+      temperature: !settings.gpt4 ? settings.temperature : undefined,
+      presence_penalty: !settings.gpt4 ? settings.presencePenalty : undefined,
+      frequency_penalty: !settings.gpt4 ? settings.frequencyPenalty : undefined
     })
   }
 
@@ -111,7 +111,7 @@ export const useAppStore = defineStore('app', () => {
       updateUsageAndCost(reply.data.usage.total_tokens)
       addMessage(
         'assistant',
-        settings.gptTurbo ? reply.data.choices[0].message.content : reply.data.choices[0].text
+        settings.gpt4 ? reply.data.choices[0].message.content : reply.data.choices[0].text
       )
     }
   }

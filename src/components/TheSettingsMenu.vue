@@ -20,7 +20,7 @@
       />
     </div>
     <div class="flex justify-between">
-      <tooltip :hidden="settings.gptTurbo" offset_y="3" text="The name of your role.">
+      <tooltip :hidden="settings.gpt4" offset_y="3" text="The name of your role.">
         <div class="flex flex-col">
           <span>User Role</span>
           <input
@@ -31,7 +31,7 @@
           />
         </div>
       </tooltip>
-      <tooltip :hidden="settings.gptTurbo" offset_y="3" text="The name of assistant's role.">
+      <tooltip :hidden="settings.gpt4" offset_y="3" text="The name of assistant's role.">
         <div class="flex flex-col">
           <span>Assistant Role</span>
           <input
@@ -44,12 +44,12 @@
       </tooltip>
     </div>
     <tooltip
-      :hidden="!settings.gptTurbo"
+      :hidden="!settings.gpt4"
       offset_y="3.5"
       text="The system prompt helps you set the behavior of the assistant. It is written in 2nd person."
     >
       <div class="flex flex-col border-b-2 pb-3">
-        <span>System Prompt (Turbo)</span>
+        <span>System Prompt (GPT-4)</span>
         <textarea
           v-model="settings.systemPrompt"
           @input="addToStore('systemPrompt', $event.target.value)"
@@ -59,12 +59,12 @@
       </div>
     </tooltip>
     <tooltip
-      :hidden="settings.gptTurbo"
+      :hidden="settings.gpt4"
       offset_y="3.5"
       text="The system prompt helps you set the behavior of the assistant. It is written in 3rd person."
     >
       <div class="flex flex-col border-b-2 pb-3">
-        <span>System Prompt (Davinci)</span>
+        <span>System Prompt (GPT-3)</span>
         <textarea
           v-model="settings.davinciPrompt"
           @input="addToStore('davinciPrompt', $event.target.value)"
@@ -101,11 +101,11 @@
         />
       </div>
     </tooltip>
-    <div :class="{ 'opacity-50': settings.gptTurbo }">
+    <div :class="{ 'opacity-50': settings.gpt4 }">
       <tooltip
-        :offset_y="ref(!settings.gptTurbo ? 5.5 : 2)"
+        :offset_y="ref(!settings.gpt4 ? 5.5 : 2)"
         :text="
-          !settings.gptTurbo
+          !settings.gpt4
             ? 'Higher values make the text more creative and diverse. Lower values make the text more predictable and accurate.'
             : 'Setting avaible only with Davinci model'
         "
@@ -113,7 +113,7 @@
         <div class="flex flex-col">
           <span>Temperature {{ settings.temperature }}</span>
           <input
-            :disabled="settings.gptTurbo"
+            :disabled="settings.gpt4"
             v-model.number="settings.temperature"
             @input="addToStore('temperature', $event.target.value)"
             type="range"
@@ -124,9 +124,9 @@
         </div>
       </tooltip>
       <tooltip
-        :offset_y="ref(!settings.gptTurbo ? 5.5 : 2)"
+        :offset_y="ref(!settings.gpt4 ? 5.5 : 2)"
         :text="
-          !settings.gptTurbo
+          !settings.gpt4
             ? 'Higher values reduce repetition but lower coherence. Lower values increase repetition but improve coherence.'
             : 'Setting avaible only with Davinci model'
         "
@@ -134,7 +134,7 @@
         <div class="flex flex-col">
           <span>Presence Penalty {{ settings.presencePenalty }}</span>
           <input
-            :disabled="settings.gptTurbo"
+            :disabled="settings.gpt4"
             v-model.number="settings.presencePenalty"
             @input="addToStore('presencePenalty', $event.target.value)"
             type="range"
@@ -145,9 +145,9 @@
         </div>
       </tooltip>
       <tooltip
-        :offset_y="ref(!settings.gptTurbo ? 5.5 : 2)"
+        :offset_y="ref(!settings.gpt4 ? 5.5 : 2)"
         :text="
-          !settings.gptTurbo
+          !settings.gpt4
             ? 'Higher values penalize repeated words but impair readability. Lower values favor repeated words but enhance readability.'
             : 'Setting avaible only with Davinci model'
         "
@@ -155,8 +155,8 @@
         <div class="flex flex-col">
           <span>Frequency Penalty {{ settings.frequencyPenalty }}</span>
           <input
-            :disabled="settings.gptTurbo"
-            :readonly="settings.gptTurbo"
+            :disabled="settings.gpt4"
+            :readonly="settings.gpt4"
             v-model.number="settings.frequencyPenalty"
             @input="addToStore('frequencyPenalty', $event.target.value)"
             type="range"
