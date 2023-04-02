@@ -9,20 +9,20 @@ export const useSettingsStore = defineStore('settings', () => {
     return isNumber ? parseFloat(itemValue) : itemValue
   }
 
-  const gptTurbo = ref(useStorage('gptTurbo', false, true))
+  const gptModel = ref(useStorage('gptModel', false, "gpt-3.5-turbo"))
   const apiKey = ref(useStorage('apiKey', false, ''))
   const userRole = ref(useStorage('userRole', false, 'User'))
   const assistantRole = ref(useStorage('assistantRole', false, 'YourGPT'))
-  const systemPrompt = ref(useStorage('systemPrompt', false, 'You are YourGPT. You are quite concise, you use emojis to express yourself.'))
-  const davinciPrompt = ref(useStorage('davinciPrompt', false, 'The following is a conversation with YourGPT. YourGPT is quite concise, it uses emojis to express itself.'))
+  const systemPrompt = ref(useStorage('systemPrompt', false, 'You are YourGPT. You are quite concise.'))
+  const davinciPrompt = ref(useStorage('davinciPrompt', false, 'The following is a conversation with YourGPT. YourGPT is quite concise.'))
   const messagesLimit = ref(useStorage('messagesLimit', true, 5))
   const maxTotalTokens = ref(useStorage('maxTotalTokens', true, 0))
-  const temperature = ref(useStorage('temperature', true, 0.5))
+  const temperature = ref(useStorage('temperature', true, 0.8))
   const presencePenalty = ref(useStorage('presencePenalty', true, 0))
   const frequencyPenalty = ref(useStorage('frequencyPenalty', true, 0))
 
   return {
-    gpt4: gptTurbo,
+    gptModel,
     apiKey,
     userRole,
     assistantRole,

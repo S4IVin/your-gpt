@@ -9,7 +9,7 @@
       </button>
     </div>
     <div class="flex flex-col">
-      <span>API Key</span>
+      <span>API Key <a class="underline text-blue-400" target="_blank" href="https://platform.openai.com/account/api-keys">(Get API Key)</a></span>
       <input
         v-model="settings.apiKey"
         @input="
@@ -20,7 +20,7 @@
       />
     </div>
     <div class="flex justify-between">
-      <tooltip :hidden="settings.gpt4" offset_y="3" text="The name of your role.">
+      <tooltip :hidden="settings.gptModel !== 'text-davinci-003'" offset_y="3" text="The name of your role.">
         <div class="flex flex-col">
           <span>User Role</span>
           <input
@@ -31,7 +31,7 @@
           />
         </div>
       </tooltip>
-      <tooltip :hidden="settings.gpt4" offset_y="3" text="The name of assistant's role.">
+      <tooltip :hidden="settings.gptModel !== 'text-davinci-003'" offset_y="3" text="The name of assistant's role.">
         <div class="flex flex-col">
           <span>Assistant Role</span>
           <input
@@ -44,7 +44,7 @@
       </tooltip>
     </div>
     <tooltip
-      :hidden="!settings.gpt4"
+      :hidden="settings.gptModel === 'text-davinci-003'"
       offset_y="3.5"
       text="The system prompt helps you set the behavior of the assistant. It is written in 2nd person."
     >
@@ -59,7 +59,7 @@
       </div>
     </tooltip>
     <tooltip
-      :hidden="settings.gpt4"
+      :hidden="settings.gptModel !== 'text-davinci-003'"
       offset_y="3.5"
       text="The system prompt helps you set the behavior of the assistant. It is written in 3rd person."
     >
@@ -101,19 +101,14 @@
         />
       </div>
     </tooltip>
-    <div :class="{ 'opacity-50': settings.gpt4 }">
+    <div>
       <tooltip
         :offset_y="ref(!settings.gpt4 ? 5.5 : 2)"
-        :text="
-          !settings.gpt4
-            ? 'Higher values make the text more creative and diverse. Lower values make the text more predictable and accurate.'
-            : 'Setting avaible only with Davinci model'
-        "
+        text="Higher values make the text more creative and diverse. Lower values make the text more predictable and accurate."
       >
         <div class="flex flex-col">
           <span>Temperature {{ settings.temperature }}</span>
           <input
-            :disabled="settings.gpt4"
             v-model.number="settings.temperature"
             @input="addToStore('temperature', $event.target.value)"
             type="range"
@@ -125,16 +120,11 @@
       </tooltip>
       <tooltip
         :offset_y="ref(!settings.gpt4 ? 5.5 : 2)"
-        :text="
-          !settings.gpt4
-            ? 'Higher values reduce repetition but lower coherence. Lower values increase repetition but improve coherence.'
-            : 'Setting avaible only with Davinci model'
-        "
+        text="Higher values reduce repetition but lower coherence. Lower values increase repetition but improve coherence."
       >
         <div class="flex flex-col">
           <span>Presence Penalty {{ settings.presencePenalty }}</span>
           <input
-            :disabled="settings.gpt4"
             v-model.number="settings.presencePenalty"
             @input="addToStore('presencePenalty', $event.target.value)"
             type="range"
@@ -146,17 +136,11 @@
       </tooltip>
       <tooltip
         :offset_y="ref(!settings.gpt4 ? 5.5 : 2)"
-        :text="
-          !settings.gpt4
-            ? 'Higher values penalize repeated words but impair readability. Lower values favor repeated words but enhance readability.'
-            : 'Setting avaible only with Davinci model'
-        "
+        text="Higher values penalize repeated words but impair readability. Lower values favor repeated words but enhance readability."
       >
         <div class="flex flex-col">
           <span>Frequency Penalty {{ settings.frequencyPenalty }}</span>
           <input
-            :disabled="settings.gpt4"
-            :readonly="settings.gpt4"
             v-model.number="settings.frequencyPenalty"
             @input="addToStore('frequencyPenalty', $event.target.value)"
             type="range"

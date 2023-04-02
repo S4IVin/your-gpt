@@ -12,7 +12,7 @@ const app = useAppStore()
 <template>
   <header class="fixed top-0 w-full">
     <div class="flex justify-between bg-neutral-700 p-2 shadow-lg">
-      <h1 class="flex items-center text-3xl font-bold">YourGPT</h1>
+      <h1 class="flex items-center text-2xl font-bold">YourGPT</h1>
       <div class="flex">
         <the-model-selector></the-model-selector>
         <button @click="app.settingsHidden = false">
