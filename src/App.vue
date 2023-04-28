@@ -12,20 +12,18 @@ const app = useAppStore()
 <template>
   <header class="fixed top-0 w-full">
     <div class="flex justify-between bg-neutral-700 p-2 shadow-lg">
-      <h1 class="flex items-center text-2xl font-bold">YourGPT</h1>
+      <h1 class="flex items-center text-2xl font-bold">SaGPT</h1>
       <div class="flex">
         <the-model-selector></the-model-selector>
-        <button @click="app.settingsHidden = false">
-          <img
-            class="ml-2 rounded-lg bg-neutral-500 invert p-1.5"
-            src="/src/assets/menu.png"
-            width="40"
-            height="40"
-          />
+        <button class="bg-neutral-500 rounded-lg ml-2" @click="app.settingsHidden = false">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+          </svg>
+
         </button>
         <h2
           :class="{
-            'ml-2 flex items-center border-l-2 px-3 text-2xl': true,
+            'ml-2 flex items-center border-l-2 pl-3 text-2xl': true,
             'text-red-500': app.tokensExceeded
           }"
         >

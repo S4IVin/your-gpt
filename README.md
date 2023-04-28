@@ -1,10 +1,9 @@
-
 # Simple website to interact with OpenAI's API
 This is a simple website to interact with OpenAI's API.
 It supports both GPT-Turbo-3.5 and Text-Davinci-003 models.
 
 Built with Vue.js, no backend involved, except OpenAI's API call.
-You can use it at [YourGPT](https://yourgpt.online/), hosted on Netlify.
+You can use it at [SaGPT](https://sagpt.it/), hosted on Netlify.
 
 Made by [S4lVin](https://github.com/S4IVin) with the help of [exSnake](https://github.com/exSnake)
 
