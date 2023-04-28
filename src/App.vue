@@ -23,7 +23,7 @@ const app = useAppStore()
         </button>
         <h2
           :class="{
-            'ml-2 flex items-center border-l-2 pl-3 text-2xl': true,
+            'mx-2 items-center border-l-2 pl-3 text-2xl hidden sm:flex': true,
             'text-red-500': app.tokensExceeded
           }"
         >
