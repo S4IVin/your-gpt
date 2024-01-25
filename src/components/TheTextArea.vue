@@ -1,40 +1,23 @@
 <template>
-  <div class="flex w-full">
-    <input
-      :disabled="isApiKeyProvided"
-      id="file-upload"
-      type="file"
-      accept="images/*"
-      @change="uploadImage($event.target.files[0])"
-      class="hidden"
-    />
-    <label
-      for="file-upload"
-      :class="isVisionEnabled ? 'rounded-l-lg bg-neutral-600 p-2 hover:bg-gray-600' : 'hidden'"
-    >
-      <img src="/src/assets/picture.png" class="invert" width="32" height="32"/>
-    </label>
+  <div
+    class="flex w-full"
+    @dragover.prevent="isDragOver = true"
+    @dragleave.prevent="isDragOver = false"
+    @drop.prevent="handleDrop"
+  >
     <textarea
-      :disabled="isApiKeyProvided"
-      v-model="text"
+      v-model="state.text"
+      @keydown.enter.exact.prevent="handleSendMessage"
+      @paste="handlePaste"
       rows="1"
-      @keyup.enter.exact.prevent="
-            app.createConversation(text, images);
-            clearInput()
-          "
       placeholder="Type here what you want to say..."
-      :class="
-            isVisionEnabled
-              ? 'w-full overflow-y-hidden resize-none max-h-20 bg-neutral-500 p-2.5 focus:outline-none'
-              : 'w-full overflow-y-hidden resize-none max-h-20 rounded-l-lg bg-neutral-500 p-2.5 focus:outline-none'
-          "
+      :disabled="!properties.isApiKeyProvided"
+      class="w-full overflow-y-hidden resize-none max-h-20 bg-neutral-500 p-2.5 focus:outline-none"
+      :class="{ 'rounded-l-lg': !properties.isVisionEnabled, 'h-32 border-blue-400 border-4': isDragOver }"
     />
     <button
-      :disabled="isApiKeyProvided"
-      @click="
-            app.createConversation(text, images)
-            clearInput()
-          "
+      @click="handleSendMessage"
+      :disabled="!properties.isApiKeyProvided"
       class="rounded-r-lg bg-neutral-600 p-2 hover:bg-gray-600"
     >
       Send
@@ -43,31 +26,37 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { storeToRefs } from "pinia";
-import { useAppStore } from '@/stores/AppStore'
+import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useAppStore } from '@/stores/AppStore';
 
 const app = useAppStore();
-const { isApiKeyProvided, isVisionEnabled } = storeToRefs(app);
+const { state, properties } = storeToRefs(app);
+const isDragOver = ref(false);
 
-const text = ref("");
-const images = ref([]);
-
-const uploadImage = async (image) => {
-  return app.getBase64(image)
+const readImageFromClipboard = (clipboardData) => {
+  const items = Array.from(clipboardData.items);
+  items.forEach((item) => {
+    if (item.kind === 'file' && item.type.startsWith('image/')) {
+      const image = item.getAsFile();
+      if (image) {
+        app.addImage(image);
+      }
+    }
+  });
 }
 
-const clearImage = (index) => {
-  if (index) {
-    images.value.splice(index, 1)
-  }
-  else {
-    images.value = [];
-  }
+const handleSendMessage = () => {
+  app.createConversation();
+  app.clearInput();
 }
 
-const clearInput = () => {
-  clearImage()
-  text.value = ''
+const handlePaste = (event) => {
+  readImageFromClipboard(event.clipboardData);
+}
+
+const handleDrop = (event) => {
+  isDragOver.value = false;
+  readImageFromClipboard(event.dataTransfer);
 }
 </script>
