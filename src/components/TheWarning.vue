@@ -1,35 +1,31 @@
 <template>
-  <div v-if="isVisible" class="fixed left-1/2 -translate-x-1/2 transition-opacity duration-1000 rounded-lg bg-red-500 p-3" :class="{'opacity-0': !isVisible, 'opacity-100': isVisible}">
-    <span class="font-bold">{{ title }}</span> {{ text }}
-  </div>
+  <transition
+    enter-active-class="transition-opacity duration-500"
+    leave-active-class="transition-opacity duration-500"
+    enter-class="opacity-0"
+    leave-to-class="opacity-0"
+  >
+    <div v-show="isVisible" class="fixed left-1/2 -translate-x-1/2 transform rounded-lg bg-red-500 p-3">
+      <span class="font-bold">Error: </span> {{ state.error.message }}
+    </div>
+  </transition>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useAppStore } from '../stores/AppStore';
 
-const props = defineProps({
-  title: String,
-  text: String,
-  permanent: {
-    type: Boolean,
-    default: false
-  }
-});
+const app = useAppStore();
+const { state } = storeToRefs(app);
+const isVisible = ref(false);
 
-const isVisible = ref(true);
-
-onMounted(() => {
-  if (!props.permanent) {
+watch(state.value.error, (newError) => {
+  if (newError) {
+    isVisible.value = true;
     setTimeout(() => {
-      isVisible.value = false; // Inizia il fade-out
-      setTimeout(() => {
-        isVisible.value = null; // Rimuove il warning dal DOM dopo il fade-out
-      }, 1000); // Durata del fade-out
-    }, 3000); // Durata del warning visibile
+      isVisible.value = false;
+    }, 5000);
   }
-});
-
-onBeforeUnmount(() => {
-  clearTimeout(); // Pulisce il timeout se il componente viene distrutto prima del tempo
 });
 </script>

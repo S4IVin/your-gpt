@@ -1,12 +1,10 @@
 <template>
-  <div class="relative">
-    <div @mouseover="hovering = true" @mouseleave="hovering = false">
-      <slot></slot>
-    </div>
+  <div class="relative" @mouseover="hovering = true" @mouseleave="hovering = false">
+    <slot></slot>
     <div
-      v-if="hovering"
-      :style="style"
-      class="absolute z-20 rounded-lg bg-gray-500 text-sm leading-tight text-white shadow-lg p-1.5 offset"
+      v-if="hovering && text"
+      class="absolute z-20 p-2 bg-gray-500 text-white text-sm leading-tight rounded-lg shadow-lg"
+      :class="computePositionClasses"
     >
       <span>{{ text }}</span>
     </div>
@@ -14,22 +12,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue';
 
 const props = defineProps({
-  text: {
+  text: String,
+  position: {
     type: String,
-    required: true
-  },
-  width: String,
-  offset_y: [String, Object],
-  offset_x: [String, Object]
-})
+    default: 'bottom',
+    validator: (value) => ['top', 'bottom', 'left', 'right'].includes(value)
+  }
+});
 
-const hovering = ref(false)
-const style = {
-  bottom: `${-props.offset_y}rem`,
-  left: `${props.offset_x}rem`,
-  width: `${props.width}rem`
-}
+const hovering = ref(false);
+
+const computePositionClasses = computed(() => {
+  switch (props.position) {
+    case 'top':
+      return 'bottom-full mb-2';
+    case 'bottom':
+      return 'top-full mt-2';
+    case 'left':
+      return 'right-full mr-2';
+    case 'right':
+      return 'left-full ml-2';
+    default:
+      return '';
+  }
+});
 </script>

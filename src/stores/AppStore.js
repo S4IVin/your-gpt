@@ -1,128 +1,159 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-import GPT3Tokenizer from 'gpt3-tokenizer'
-import { Configuration, OpenAIApi } from 'openai'
-import { useSettingsStore } from '@/stores/SettingsStore'
-
-const tokenizer = new GPT3Tokenizer({ type: 'gpt3' })
+import { ref, computed } from 'vue';
+import { defineStore } from 'pinia';
+import { OpenAI } from 'openai';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 // eslint-disable-next-line import/prefer-default-export
 export const useAppStore = defineStore('app', () => {
-  const settings = useSettingsStore()
+  const settings = useSettingsStore();
 
-  const settingsHidden = ref(true)
-  const tokensUsed = ref(0)
-  const moneyUsed = ref(0)
-  const messages = ref([{ role: 'system', content: settings.systemPrompt }])
-
-  const isApiKeyProvided = computed(() => {
-    return !!settings.apiKey
-  })
-  const tokensExceeded = computed(() => {
-    return (
-      tokensUsed.value >= settings.maxTotalTokens &&
-      (settings.maxTotalTokens !== 0 ? settings.maxTotalTokens !== '' : false)
-    )
-  })
-
-  const extractItemsFromArray = (array, x) => {
-    if (x >= array.length) {
-      return array
+  const state = ref({
+    isSettingsOpen: false,
+    text: '',
+    images: [],
+    messages: [{ role: 'system', content: [{ type: 'text', text: settings.systemPrompt }] }],
+    error: {
+      title: '',
+      message: ''
     }
+  });
 
-    const firstItem = [array[0]]
-    const lastXItems = array.slice(-x)
-    return firstItem.concat(lastXItems)
-  }
+  const properties = computed(() => ({
+    isImagePreviewOpen: state.value.images.length > 0,
+    isVisionEnabled: settings.gptModel === 'gpt-4-vision-preview',
+    isApiKeyProvided: !!settings.apiKey
+  }));
+
+  const extractEdges = (array, limit) => {
+    return limit >= array.length ? array : [array[0], ...array.slice(-limit)];
+  };
+
+  const addImage = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => state.value.images.push(reader.result);
+    reader.onerror = (error) => {
+      throw error;
+    };
+  };
+
+  const clearImage = (index) => {
+    if (index !== undefined) {
+      state.value.images.splice(index, 1);
+    } else {
+      state.value.images = [];
+    }
+  };
+
+  const clearInput = () => {
+    clearImage();
+    state.value.text = '';
+  };
 
   const clearChat = () => {
-    messages.value.length = 1
-    tokensUsed.value = 0
-    moneyUsed.value = 0
-  }
-
-  const updateUsageAndCost = (tokens) => {
-    tokensUsed.value = tokens + tokensUsed.value
-    moneyUsed.value = Math.round(moneyUsed.value * 0.02) / 10000
-  }
-
-  const getTokenCount = (text) => {
-    return tokenizer.encode(text).text.length
-  }
+    state.value.messages = [{ role: 'system', content: [{ type: 'text', text: settings.systemPrompt }] }];
+    clearInput();
+  };
 
   const addMessage = (role, content) => {
-    messages.value.push({
+    state.value.messages.push({
       role,
       content
-    })
-  }
+    });
+  };
+
+  const addChunk = (chunk) => {
+    state.value.messages[state.value.messages.length - 1].content += chunk;
+  };
+
+  const sortContents = (contents) => {
+    return contents.sort((a, b) => {
+      if (a.type === 'image_url') {
+        return -1;
+      }
+      if (b.type === 'image_url') {
+        return 1;
+      }
+      return 0;
+    });
+  };
+
+  const mapMessageContent = (messageContent, rawMessage) => {
+    if (messageContent.type === 'text') {
+      return {
+        type: messageContent.type,
+        role: rawMessage.role,
+        data: messageContent.text
+      };
+    }
+    return {
+      type: messageContent.type,
+      role: rawMessage.role,
+      data: messageContent.image_url
+    };
+  };
 
   const getMessages = () => {
-    const messagesLimitDisabled = settings.messagesLimit === 0 || settings.messagesLimit === ''
+    return state.value.messages.slice(1).flatMap((rawMessage) => {
+      if (Array.isArray(rawMessage.content)) {
+        const sortedContent = sortContents(rawMessage.content);
+        return sortedContent.map((messageContent) => mapMessageContent(messageContent, rawMessage));
+      }
+      return { type: 'text', role: rawMessage.role, data: rawMessage.content };
+    });
+  };
 
-    return messagesLimitDisabled
-      ? messages.value
-      : extractItemsFromArray(messages.value, settings.messagesLimit)
-  }
+  const getTrunkatedMessages = () => {
+    return extractEdges(state.value.messages, settings.messagesLimit);
+  };
 
-  const generateDavinciPrompt = () => {
-    const roles = { user: settings.userRole, assistant: settings.assistantRole }
-    let prompt = `${settings.davinciPrompt}\n`
+  const generateReply = async () => {
+    try {
+      const openai = new OpenAI({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
 
-    getMessages()
-      .slice(1)
-      .forEach((message) => {
-        prompt = `${prompt}\n ${roles[message.role]}: ${message.content}`
-      })
+      state.value.messages[0] = { role: 'system', content: [{ type: 'text', text: settings.systemPrompt }] };
 
-    return `${prompt}\n${roles.assistant}: `
-  }
+      const stream = await openai.chat.completions.create({
+        model: settings.gptModel,
+        messages: getTrunkatedMessages(),
+        max_tokens: 4096,
+        stream: true,
+        temperature: settings.temperature,
+        presence_penalty: settings.presencePenalty,
+        frequency_penalty: settings.frequencyPenalty
+      });
 
-  const generateConfiguration = () => {
-    const configuration = new Configuration({ apiKey: settings.apiKey })
-    const openai = new OpenAIApi(configuration)
-    return settings.gptModel !== 'text-davinci-003'
-      ? (a) => openai.createChatCompletion(a)
-      : (a) => openai.createCompletion(a)
-  }
+      addMessage('assistant', '');
 
-  const generateReply = () => {
-    const getChatCompletion = generateConfiguration()
-    const prompt = generateDavinciPrompt()
-
-    messages.value[0] = { role: 'system', content: settings.systemPrompt }
-
-    return getChatCompletion({
-      model: settings.gptModel,
-      messages: settings.gptModel !== "text-davinci-003" ? getMessages() : undefined,
-      prompt: settings.gptModel === "text-davinci-003" ? prompt : undefined,
-      max_tokens: settings.gptModel === "text-davinci-003" ? 4092 - getTokenCount(prompt) : undefined,
-      temperature: settings.temperature,
-      presence_penalty: settings.presencePenalty,
-      frequency_penalty: settings.frequencyPenalty,
-    })
-  }
-
-  const createConversation = async (text) => {
-    if (text) {
-      addMessage('user', text)
-      const reply = await generateReply()
-      updateUsageAndCost(reply.data.usage.total_tokens)
-      addMessage(
-        'assistant',
-        settings.gptModel !== 'text-davinci-003' ? reply.data.choices[0].message.content : reply.data.choices[0].text
-      )
+      for await (const chunk of stream) {
+        if (chunk.choices[0].delta.content) {
+          addChunk(chunk.choices[0].delta.content);
+        }
+      }
+    } catch (error) {
+      state.value.error.message = '';
+      state.value.error.message = error.message;
     }
-  }
+  };
+
+  const createConversation = async () => {
+    const contents = state.value.text ? [{ type: 'text', text: state.value.text }] : [];
+    contents.push(...state.value.images.map((image) => ({ type: 'image_url', image_url: image })));
+
+    if (contents.length) {
+      addMessage('user', contents);
+      await generateReply();
+    }
+  };
 
   return {
-    settingsHidden,
-    tokensUsed,
-    moneyUsed,
-    messages,
-    isApiKeyProvided,
-    tokensExceeded,
+    state,
+    properties,
+    addImage,
+    clearImage,
+    clearInput,
     clearChat,
+    getMessages,
     createConversation
-  }
-})
+  };
+});

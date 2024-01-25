@@ -1,11 +1,11 @@
 <template>
-  <div className="image-scroll-container">
-    <ImageComponent
+  <div v-if="state.images.length" class="flex overflow-x-scroll p-2.5 gap-2.5">
+    <ImagePreview
       v-for="(image, index) in state.images"
       :key="index"
-      :src="image"
+      :image="image"
       :disabled="!properties.isApiKeyProvided"
-      @remove="app.clearImage(index)"
+      @remove="clearImage(index)"
     />
   </div>
 </template>
@@ -13,8 +13,9 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useAppStore } from '@/stores/AppStore';
-import ImageComponent from './ImageComponent.vue';
+import ImagePreview from './ImagePreview.vue';
 
 const app = useAppStore();
 const { state, properties } = storeToRefs(app);
+const { clearImage } = app;
 </script>
