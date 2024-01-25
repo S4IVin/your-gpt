@@ -9,7 +9,7 @@ export const useSettingsStore = defineStore('settings', () => {
     return isNumber ? parseFloat(itemValue) : itemValue;
   };
 
-  const gptModel = ref(useStorage('gptModel', false, 'gpt-3.5-turbo'));
+  const gptModel = ref(useStorage('gptModel', false, 'gpt-3.5-turbo-1106'));
   const apiKey = ref(useStorage('apiKey', false, ''));
   const systemPrompt = ref(useStorage('systemPrompt', false, 'You are SaGPT. You are quite concise.'));
   const messagesLimit = ref(useStorage('messagesLimit', true, 5));
