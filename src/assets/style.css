@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+button {
+  cursor: pointer;
+}
+
 .break-word {
   word-break: break-word;
 }

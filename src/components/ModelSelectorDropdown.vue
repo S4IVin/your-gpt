@@ -7,7 +7,7 @@
         @click="changeModel(option.value)"
         class="relative flex cursor-pointer items-center rounded-md px-4 py-2 transition"
         :class="{
-          'bg-violet-600 hover:bg-violet-500': option.value === 'gpt-4-0125-preview',
+          'bg-violet-600 bg-opacity-60 hover:bg-violet-500 hover:bg-opacity-60': option.value === 'gpt-4-0125-preview',
           'hover:bg-neutral-600': option.value !== 'gpt-4-0125-preview'
         }"
       >
