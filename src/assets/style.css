@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 .break-word {
-    word-break: break-word;
+  word-break: break-word;
 }
 
 @layer base {
-    input[type='number']::-webkit-outer-spin-button,
-    input[type='number']::-webkit-inner-spin-button,
-    input[type='number'] {
-        -webkit-appearance: none;
-        -moz-appearance: textfield !important;
-    }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"] {
+    -webkit-appearance: none;
+    -moz-appearance: textfield !important;
+  }
 }

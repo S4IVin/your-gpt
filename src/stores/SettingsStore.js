@@ -13,8 +13,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const apiKey = ref(useStorage('apiKey', false, ''));
   const systemPrompt = ref(useStorage('systemPrompt', false, 'You are SaGPT. You are quite concise.'));
   const messagesLimit = ref(useStorage('messagesLimit', true, 5));
-  const maxTotalTokens = ref(useStorage('maxTotalTokens', true, 0));
-  const temperature = ref(useStorage('temperature', true, 0.8));
+  const tokensLimit = ref(useStorage('tokensLimit', true, 0));
+  const temperature = ref(useStorage('temperature', true, 0.5));
   const presencePenalty = ref(useStorage('presencePenalty', true, 0));
   const frequencyPenalty = ref(useStorage('frequencyPenalty', true, 0));
 
@@ -23,7 +23,7 @@ export const useSettingsStore = defineStore('settings', () => {
     apiKey,
     systemPrompt,
     messagesLimit,
-    maxTotalTokens,
+    tokensLimit,
     temperature,
     presencePenalty,
     frequencyPenalty

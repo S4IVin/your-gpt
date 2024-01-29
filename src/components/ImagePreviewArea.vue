@@ -1,10 +1,14 @@
 <template>
-  <div v-if="state.images.length" class="flex overflow-x-scroll p-2.5 gap-2.5">
+  <div
+    v-if="state.images.length"
+    class="flex gap-2.5 overflow-x-scroll border-b border-neutral-600 p-2.5"
+    :class="{ 'opacity-50': state.isError }"
+  >
     <ImagePreview
       v-for="(image, index) in state.images"
       :key="index"
       :image="image"
-      :disabled="!properties.isApiKeyProvided"
+      :disabled="state.isError"
       @remove="clearImage(index)"
     />
   </div>
@@ -16,6 +20,6 @@ import { useAppStore } from '@/stores/AppStore';
 import ImagePreview from './ImagePreview.vue';
 
 const app = useAppStore();
-const { state, properties } = storeToRefs(app);
+const { state } = storeToRefs(app);
 const { clearImage } = app;
 </script>

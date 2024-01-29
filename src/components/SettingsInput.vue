@@ -5,7 +5,8 @@
       <input
         v-model="model"
         :type="type"
-        class="w-1/4 mt-1 h-6 rounded-md border-2 bg-neutral-500 text-center focus:outline-none"
+        :max="max"
+        class="mt-1 h-6 w-1/4 rounded-md border bg-neutral-600 text-center focus:outline-none"
       />
     </label>
   </tooltip>
@@ -17,6 +18,8 @@ import Tooltip from './Tooltip.vue';
 defineProps({
   label: String,
   type: String,
+  min: String,
+  max: String,
   tooltip: String
 });
 

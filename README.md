@@ -1,4 +1,5 @@
 # Simple website to interact with OpenAI's API
+
 This is a simple website to interact with OpenAI's API.
 It supports both GPT-Turbo-3.5 and Text-Davinci-003 models.
 

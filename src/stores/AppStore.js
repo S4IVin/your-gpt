@@ -1,7 +1,7 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { OpenAI } from 'openai';
-import { useSettingsStore } from '@/stores/SettingsStore';
+import { useSettingsStore } from './SettingsStore';
 
 // eslint-disable-next-line import/prefer-default-export
 export const useAppStore = defineStore('app', () => {
@@ -9,23 +9,25 @@ export const useAppStore = defineStore('app', () => {
 
   const state = ref({
     isSettingsOpen: false,
+    isDragOver: false,
+    isError: false,
     text: '',
     images: [],
-    messages: [{ role: 'system', content: [{ type: 'text', text: settings.systemPrompt }] }],
-    error: {
-      title: '',
-      message: ''
-    }
+    messages: [
+      {
+        role: 'system',
+        content: [{ type: 'text', text: settings.systemPrompt }]
+      }
+    ]
   });
 
   const properties = computed(() => ({
     isImagePreviewOpen: state.value.images.length > 0,
-    isVisionEnabled: settings.gptModel === 'gpt-4-vision-preview',
-    isApiKeyProvided: !!settings.apiKey
+    isVisionEnabled: settings.gptModel === 'gpt-4-vision-preview'
   }));
 
   const extractEdges = (array, limit) => {
-    return limit >= array.length ? array : [array[0], ...array.slice(-limit)];
+    return limit >= array.length || !limit ? array : [array[0], ...array.slice(-limit)];
   };
 
   const addImage = (file) => {
@@ -51,14 +53,20 @@ export const useAppStore = defineStore('app', () => {
   };
 
   const clearChat = () => {
-    state.value.messages = [{ role: 'system', content: [{ type: 'text', text: settings.systemPrompt }] }];
+    state.value.messages = [
+      {
+        role: 'system',
+        content: [{ type: 'text', text: settings.systemPrompt }]
+      }
+    ];
     clearInput();
   };
 
-  const addMessage = (role, content) => {
+  const addMessage = (role, content, isError) => {
     state.value.messages.push({
       role,
-      content
+      content,
+      isError
     });
   };
 
@@ -93,13 +101,17 @@ export const useAppStore = defineStore('app', () => {
     };
   };
 
+  const toggleSettings = () => {
+    state.value.isSettingsOpen = !state.value.isSettingsOpen;
+  };
+
   const getMessages = () => {
     return state.value.messages.slice(1).flatMap((rawMessage) => {
       if (Array.isArray(rawMessage.content)) {
         const sortedContent = sortContents(rawMessage.content);
         return sortedContent.map((messageContent) => mapMessageContent(messageContent, rawMessage));
       }
-      return { type: 'text', role: rawMessage.role, data: rawMessage.content };
+      return { type: 'text', role: rawMessage.role, data: rawMessage.content, isError: rawMessage.isError };
     });
   };
 
@@ -109,20 +121,27 @@ export const useAppStore = defineStore('app', () => {
 
   const generateReply = async () => {
     try {
-      const openai = new OpenAI({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
+      const openai = new OpenAI({
+        apiKey: settings.apiKey,
+        dangerouslyAllowBrowser: true
+      });
 
-      state.value.messages[0] = { role: 'system', content: [{ type: 'text', text: settings.systemPrompt }] };
+      state.value.messages[0] = {
+        role: 'system',
+        content: [{ type: 'text', text: settings.systemPrompt }]
+      };
 
       const stream = await openai.chat.completions.create({
         model: settings.gptModel,
         messages: getTrunkatedMessages(),
-        max_tokens: 4096,
+        max_tokens: settings.tokensLimit === 0 ? 4096 : settings.tokensLimit,
         stream: true,
         temperature: settings.temperature,
         presence_penalty: settings.presencePenalty,
         frequency_penalty: settings.frequencyPenalty
       });
 
+      state.value.isError = false;
       addMessage('assistant', '');
 
       for await (const chunk of stream) {
@@ -131,14 +150,27 @@ export const useAppStore = defineStore('app', () => {
         }
       }
     } catch (error) {
-      state.value.error.message = '';
-      state.value.error.message = error.message;
+      state.value.isError = true;
+      addMessage('assistant', error.message, true);
     }
+  };
+
+  const reloadConversation = async (isError) => {
+    if (isError) {
+      state.value.messages.splice(-1);
+    }
+
+    await generateReply();
   };
 
   const createConversation = async () => {
     const contents = state.value.text ? [{ type: 'text', text: state.value.text }] : [];
-    contents.push(...state.value.images.map((image) => ({ type: 'image_url', image_url: image })));
+    contents.push(
+      ...state.value.images.map((image) => ({
+        type: 'image_url',
+        image_url: image
+      }))
+    );
 
     if (contents.length) {
       addMessage('user', contents);
@@ -153,7 +185,9 @@ export const useAppStore = defineStore('app', () => {
     clearImage,
     clearInput,
     clearChat,
+    toggleSettings,
     getMessages,
+    reloadConversation,
     createConversation
   };
 });

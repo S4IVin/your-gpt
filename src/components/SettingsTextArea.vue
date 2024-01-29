@@ -5,19 +5,19 @@
       <textarea
         v-model="model"
         :placeholder="placeholder"
-        class="w-full mt-1 h-24 resize-none rounded-md border-2 bg-neutral-500 p-1 focus:outline-none"
+        class="mt-1 h-24 w-full resize-none rounded-md border bg-neutral-600 p-1 focus:outline-none"
       ></textarea>
     </label>
   </tooltip>
 </template>
 
 <script setup>
-import Tooltip from './Tooltip.vue';
+import Tooltip from "./Tooltip.vue";
 
 defineProps({
   label: String,
   placeholder: String,
-  tooltip: String
+  tooltip: String,
 });
 
 const model = defineModel();

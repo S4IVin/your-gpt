@@ -3,7 +3,7 @@
     <slot></slot>
     <div
       v-if="hovering && text"
-      class="absolute z-20 p-2 bg-gray-500 text-white text-sm leading-tight rounded-lg shadow-lg"
+      class="absolute z-20 rounded-lg bg-neutral-600 p-2 text-sm leading-tight text-white shadow-lg"
       :class="computePositionClasses"
     >
       <span>{{ text }}</span>
@@ -14,6 +14,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 
+const hovering = ref(false);
+
 const props = defineProps({
   text: String,
   position: {
@@ -22,8 +24,6 @@ const props = defineProps({
     validator: (value) => ['top', 'bottom', 'left', 'right'].includes(value)
   }
 });
-
-const hovering = ref(false);
 
 const computePositionClasses = computed(() => {
   switch (props.position) {
